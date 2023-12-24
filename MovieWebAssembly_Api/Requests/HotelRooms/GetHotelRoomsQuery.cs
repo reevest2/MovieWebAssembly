@@ -21,9 +21,9 @@ public record GetHotelRoomsQuery() : IRequest<IEnumerable<HotelRoomDTO>>
         
         public async Task<IEnumerable<HotelRoomDTO>> Handle(GetHotelRoomsQuery request, CancellationToken cancellationToken)
         {
-            var allRooms = await  _hotelRoomRepository.GetAllHotelRooms();
-            //var result = _mapper.Map<IEnumerable<HotelRoom>>(allRooms);
-            return allRooms;
+            var allRooms = await  _hotelRoomRepository.GetAllAsync();
+            var result = _mapper.Map<IEnumerable<HotelRoomDTO>>(allRooms);
+            return result;
         }
     }
 }

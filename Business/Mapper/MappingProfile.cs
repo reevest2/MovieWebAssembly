@@ -1,5 +1,6 @@
 using AutoMapper;
 using DataAccess.Data;
+using DataAccess.Data.Models;
 using Models;
 
 namespace Business.Mapper;
