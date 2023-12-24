@@ -21,10 +21,18 @@ public class HotelRoomController : Controller
         _mediator = mediator;
     }
 
-    [HttpGet]
+    [HttpGet("GetAllHotelRooms")]
     public async Task<IEnumerable<HotelRoomDTO>> GetHotelRooms()
     {
         var result = await _mediator.Send(new GetHotelRoomsQuery());
+        return result;
+    }
+
+   
+    [HttpGet("GetHotelRoomById/{id}")]
+    public async Task<HotelRoomDTO> GetHotelRoomById(int id)
+    {
+        var result = await _mediator.Send(new GetHotelRoomByIdQuery(id));
         return result;
     }
 }
