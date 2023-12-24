@@ -14,7 +14,6 @@ public class HotelRoomController : Controller
 {
     private readonly IHotelRoomRepository _hotelRoomRepository;
     private readonly IMediator _mediator;
-    private readonly Mapper _mapper;
 
     public HotelRoomController(IHotelRoomRepository hotelRoomRepository, IMediator mediator)
     {
@@ -25,9 +24,6 @@ public class HotelRoomController : Controller
     [HttpGet]
     public async Task<IEnumerable<HotelRoomDTO>> GetHotelRooms()
     {
-        //var allRooms = await _hotelRoomRepository.GetAllHotelRooms();
-        //return Ok(allRooms);
-
         var result = await _mediator.Send(new GetHotelRoomsQuery());
         return result;
     }
