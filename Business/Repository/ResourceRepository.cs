@@ -20,7 +20,6 @@ public class ResourceRepository<TResource> : IResourceRepository<TResource> wher
 
     public virtual async Task<List<TResource>> GetAllAsync()
     {
-        return await _dbContext.Set<Resource<TResource>>()
-            .Select(r => r.Data).ToListAsync();
+        return await _dbContext.Set<TResource>().ToListAsync();
     }
 }

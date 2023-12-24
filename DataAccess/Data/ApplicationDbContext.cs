@@ -11,7 +11,7 @@ public class ApplicationDbContext : IdentityDbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
     { }
 
-    public DbSet<Resource<HotelRoom>> HotelRooms { get; set; }
+    public DbSet<HotelRoom> HotelRooms { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,11 +22,7 @@ public class ApplicationDbContext : IdentityDbContext
         void AddResourceConversion<TResource>() where TResource : ResourceBase
         {
             modelBuilder
-                .Entity<Resource<TResource>>()
-                .Property(r => r.Data)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<TResource>(v));
+                .Entity<TResource>();
         }
     }
 }
