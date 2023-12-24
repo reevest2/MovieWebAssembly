@@ -1,5 +1,5 @@
-CREATE DATABASE BlazorApp2;
-USE BlazorApp2;
+CREATE DATABASE MovieWebAssemblyAppDatabse;
+USE MovieWebAssemblyAppDatabse;
 
 
 -- Creating the Identity schema
