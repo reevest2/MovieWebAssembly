@@ -1,60 +1,65 @@
 ﻿@page "/fetchdata"
-@inject HttpClient Http
+@using Models
+@using MovieWebAssembly_App.ApiClient
 
-<PageTitle>Weather forecast</PageTitle>
+<div class="row mt-4">
+    <div class="col-8">
+        <h4 class="card-title text-info">Hotel Room's</h4>
+    </div>
+    <div class="col-3 offset-1">
+        <NavLink href="hotel-room/create" class="btn btn-info form-control">Add New Room</NavLink>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-12">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Occupancy</th>
+                    <th>Rate</th>
+                    <th>SqFt</th>
+                    <th>Actions</th>
 
-<h1>Weather forecast</h1>
+                </tr>
+            </thead>
+            <tbody>
+                @if (HotelRooms.Any())
+                {
+                    foreach (var room in HotelRooms)
+                    {
+                        <tr>
+                            <td>@room.Name</td>
+                            <td>@room.Occupancy</td>
+                            <td>@room.RegularRate.ToString("c")</td>
+                            <td>@room.SqFt</td>
+                            <td><NavLink href="@($"hotel-room/edit/{room.Id}")" class="btn btn-primary">Edit</NavLink></td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="5">No Records Found</td></tr>
+                }
+            </tbody>
+        </table>
 
-<p>This component demonstrates fetching data from the server.</p>
+    </div>
+</div>
 
-@if (forecasts == null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var forecast in forecasts)
-        {
-            <tr>
-                <td>@forecast.Date.ToShortDateString()</td>
-                <td>@forecast.TemperatureC</td>
-                <td>@forecast.TemperatureF</td>
-                <td>@forecast.Summary</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private IEnumerable<HotelRoomDTO> HotelRooms { get; set; } = new List<HotelRoomDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        var client = new ApiClient();
+        var hotelRooms = await client.GetHotelRooms();
+        foreach (var hotelroom in HotelRooms)
+        {
+            Console.WriteLine(hotelroom.RegularRate);
+            Console.WriteLine(hotelroom.Occupancy);
+        }
+        //HotelRooms = await hotelRoomRepository.GetAllHotelRooms();
     }
-
-    public class WeatherForecast
-    {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
-
 }

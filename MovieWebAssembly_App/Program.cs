@@ -1,8 +1,12 @@
+using Business.Repository;
+using DataAccess.Data;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MovieWebAssembly_App;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.Services.AddScoped<HotelRoomRepository>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
