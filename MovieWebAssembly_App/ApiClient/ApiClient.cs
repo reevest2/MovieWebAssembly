@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text.Json;
 using DataAccess.Data;
 
@@ -7,11 +8,16 @@ public class ApiClient
 {
     public async Task<List<HotelRoom>> GetHotelRooms()
     {
+        var options = new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true,
+        };
+        
         var httpClient = new HttpClient();
 
         var response = await httpClient.GetAsync("https://localhost:7282/api/HotelRoom");
         var responseString = await response.Content.ReadAsStringAsync();
-        var hotelRooms = JsonSerializer.Deserialize<List<HotelRoom>>(responseString);
+        var hotelRooms = JsonSerializer.Deserialize<List<HotelRoom>>(responseString, options);
 
         return hotelRooms;
     }

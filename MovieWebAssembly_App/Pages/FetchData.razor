@@ -55,7 +55,7 @@
     {
         var client = new ApiClient();
         var hotelRooms = await client.GetHotelRooms();
-        foreach (var hotelroom in HotelRooms)
+        foreach (var hotelroom in hotelRooms)
         {
             Console.WriteLine(hotelroom.RegularRate);
             Console.WriteLine(hotelroom.Occupancy);
