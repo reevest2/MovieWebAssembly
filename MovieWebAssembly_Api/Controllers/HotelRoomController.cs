@@ -42,4 +42,11 @@ public class HotelRoomController : Controller
         var result = await _mediator.Send(new CreateHotelRoomCommand(hotelRoomDto));
         return result;
     }
+    
+    [HttpPost("UpdateHotelRoom")]
+    public async Task<bool> UpdateHotelRoom(HotelRoomDTO hotelRoomDto)
+    {
+        var result = await _mediator.Send(new UpdateHotelRoomCommand(hotelRoomDto));
+        return result;
+    }
 }

@@ -21,4 +21,6 @@ public class ApiClient
         var hotelRooms = JsonSerializer.Deserialize<List<HotelRoomDTO>>(responseString, options);
         return hotelRooms;
     }
+    
+    
 }
