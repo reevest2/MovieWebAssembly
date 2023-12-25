@@ -49,4 +49,11 @@ public class HotelRoomController : Controller
         var result = await _mediator.Send(new UpdateHotelRoomCommand(hotelRoomDto));
         return result;
     }
+    
+    [HttpDelete("DeleteHotelRoom")]
+    public async Task<bool> UpdateHotelRoom(int id)
+    {
+        var result = await _mediator.Send(new DeleteHotelRoomCommand(id));
+        return result;
+    }
 }

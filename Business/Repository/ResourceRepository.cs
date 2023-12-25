@@ -10,6 +10,7 @@ public interface IResourceRepository<T> where T : ResourceBase
     Task<T> GetByIdAsync(int id);
     Task<bool> CreateResource(T resource);
     Task<bool> UpdateResource(T resource);
+    Task<bool> DeleteResource(int id);
 }
 
 public class ResourceRepository<TResource> : IResourceRepository<TResource> where TResource : ResourceBase
@@ -47,6 +48,19 @@ public class ResourceRepository<TResource> : IResourceRepository<TResource> wher
         }
         
         _dbContext.Entry(entity).CurrentValues.SetValues(resource);
+        return await _dbContext.SaveChangesAsync() > 0;
+    }
+
+    public virtual async Task<bool> DeleteResource(int id)
+    {
+        var entity = await _dbContext.Set<TResource>().FindAsync(id);
+
+        if (entity == null)
+        {
+            return false;
+        }
+
+        _dbContext.Set<TResource>().Remove(entity);
         return await _dbContext.SaveChangesAsync() > 0;
     }
 
