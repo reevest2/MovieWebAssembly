@@ -9,51 +9,49 @@ using MovieWebAssembly_Api.Requests.HotelRooms;
 namespace MovieWebAssembly_Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class HotelRoomController : Controller
 {
-    private readonly IHotelRoomRepository _hotelRoomRepository;
     private readonly IMediator _mediator;
 
-    public HotelRoomController(IHotelRoomRepository hotelRoomRepository, IMediator mediator)
+    public HotelRoomController(IMediator mediator)
     {
-        _hotelRoomRepository = hotelRoomRepository;
         _mediator = mediator;
     }
-
-    [HttpGet("GetAllHotelRooms")]
-    public async Task<IEnumerable<HotelRoomDTO>> GetHotelRooms()
+    
+    [HttpGet]
+    public async Task<IActionResult> GetHotelRooms()
     {
         var result = await _mediator.Send(new GetHotelRoomsQuery());
-        return result;
+        return Ok(result);
     }
 
    
-    [HttpGet("GetHotelRoomById/{id}")]
-    public async Task<HotelRoomDTO> GetHotelRoomById(int id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetHotelRoomById(int id)
     {
         var result = await _mediator.Send(new GetHotelRoomByIdQuery(id));
-        return result;
+        return Ok(result);
     }
 
-    [HttpPost("CreateHotelRoom")]
-    public async Task<bool> CreateHotelRoom(HotelRoomDTO hotelRoomDto)
+    [HttpPost("Create")]
+    public async Task<IActionResult> CreateHotelRoom(HotelRoomDTO hotelRoomDto)
     {
         var result = await _mediator.Send(new CreateHotelRoomCommand(hotelRoomDto));
-        return result;
+        return Ok(result);
     }
-    
-    [HttpPost("UpdateHotelRoom")]
-    public async Task<bool> UpdateHotelRoom(HotelRoomDTO hotelRoomDto)
+
+    [HttpPost("Update")]
+    public async Task<IActionResult> UpdateHotelRoom(HotelRoomDTO hotelRoomDto)
     {
         var result = await _mediator.Send(new UpdateHotelRoomCommand(hotelRoomDto));
-        return result;
+        return Ok(result);
     }
     
-    [HttpDelete("DeleteHotelRoom")]
-    public async Task<bool> UpdateHotelRoom(int id)
+    [HttpDelete]
+    public async Task<IActionResult> UpdateHotelRoom(int id)
     {
         var result = await _mediator.Send(new DeleteHotelRoomCommand(id));
-        return result;
+        return Ok(result);
     }
 }
