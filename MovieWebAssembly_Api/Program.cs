@@ -1,5 +1,7 @@
+using System.Reflection;
 using Business.Repository;
 using DataAccess.Data;
+using DataAccess.Data.Abstractions;
 using DataAccess.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +19,31 @@ builder.Services.AddCors(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 builder.Services.AddScoped<IResourceRepository<HotelRoom>, HotelRoomRepository>();
-builder.Services.AddTransient<IRequestHandler<ReadAll<HotelRoomDTO, HotelRoom>.ReadQuery, List<HotelRoomDTO>>, ReadAll<HotelRoomDTO, HotelRoom>.QueryHandler>();
+
+var dataAccessAssembly = Assembly.Load("DataAccess");
+var modelsAssembly = Assembly.Load("Models");
+
+// Scan for entity types in the DataAccess assembly
+var entityTypes = dataAccessAssembly.GetTypes()
+    .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic && t.IsSubclassOf(typeof(ResourceBase))); // Assuming all entities inherit from ResourceBase
+
+// Register each query handler for the found entity types
+foreach (var entityType in entityTypes)
+{
+    // Assume DTOs follow naming convention of EntityName + "DTO"
+    var dtoName = $"{entityType.Name}DTO";
+    // Find DTO types in Models assembly
+    var dtoType = modelsAssembly.GetType($"Models.{dtoName}", throwOnError: false);
+    if (dtoType != null)
+    {
+        var handlerGenericType = typeof(ReadAll<,>).MakeGenericType(dtoType, entityType).GetNestedType("QueryHandler");
+        var requestGenericType = typeof(ReadAll<,>).MakeGenericType(dtoType, entityType).GetNestedType("ReadQuery");
+        var iRequestHandlerType = typeof(IRequestHandler<,>).MakeGenericType(requestGenericType, typeof(List<>).MakeGenericType(dtoType));
+
+        builder.Services.AddTransient(iRequestHandlerType, handlerGenericType);
+    }
+}
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddControllers();
