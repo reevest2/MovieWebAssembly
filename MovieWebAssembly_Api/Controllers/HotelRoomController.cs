@@ -20,15 +20,21 @@ public class HotelRoomController : Controller
     {
         _mediator = mediator;
     }
-    
+
     [HttpGet]
-    public async Task<IActionResult> GetHotelRooms()
+    public async Task<IActionResult> GetAllHotelRooms()
     {
-        var result = await _mediator.Send(new ReadAll.ReadQuery<HotelRoom>());
-        return Ok(result);
+        // Create a new ReadQuery instance
+        var query = new ReadAll<HotelRoomDTO, HotelRoom>.ReadQuery();
+
+        // Send the query to MediatR which will trigger the corresponding handler
+        var hotelRooms = await _mediator.Send(query);
+
+        // Return the list of hotel room models
+        return Ok(hotelRooms);
     }
 
-   
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetHotelRoomById(int id)
     {
@@ -49,7 +55,7 @@ public class HotelRoomController : Controller
         var result = await _mediator.Send(new UpdateHotelRoomCommand(hotelRoomDto));
         return Ok(result);
     }
-    
+
     [HttpDelete]
     public async Task<IActionResult> UpdateHotelRoom(int id)
     {

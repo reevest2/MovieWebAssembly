@@ -3,6 +3,7 @@ using DataAccess.Data;
 using DataAccess.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Models;
 using MovieWebAssembly_Api.Requests.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 builder.Services.AddScoped<IResourceRepository<HotelRoom>, HotelRoomRepository>();
-builder.Services.AddTransient(typeof(IRequestHandler<ReadAll.ReadQuery<HotelRoom>, List<HotelRoom>>), typeof(ReadAll.QueryHandler<HotelRoom>));
+builder.Services.AddTransient<IRequestHandler<ReadAll<HotelRoomDTO, HotelRoom>.ReadQuery, List<HotelRoomDTO>>, ReadAll<HotelRoomDTO, HotelRoom>.QueryHandler>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddControllers();
