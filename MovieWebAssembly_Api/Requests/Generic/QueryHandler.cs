@@ -6,7 +6,7 @@ namespace MovieWebAssembly_Api.Requests.Generic;
 
 public partial class ReadAll
 {
-    public class QueryHandler<TEntity> : IRequestHandler<ReadAll<TEntity>, List<TEntity>> 
+    public class QueryHandler<TEntity> : IRequestHandler<ReadQuery<TEntity>, List<TEntity>> 
         where TEntity : ResourceBase
     {
         private readonly IResourceRepository<TEntity> _repository;
@@ -16,7 +16,7 @@ public partial class ReadAll
             _repository = repository;
         }
         
-        public async Task<List<TEntity>> Handle(ReadAll<TEntity> request, CancellationToken cancellationToken)
+        public async Task<List<TEntity>> Handle(ReadQuery<TEntity> request, CancellationToken cancellationToken)
         {
             return await _repository.GetAllAsync();
         }
