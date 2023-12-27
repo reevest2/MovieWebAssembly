@@ -4,8 +4,10 @@ using MediatR;
 
 namespace MovieWebAssembly_Api.Requests.Generic;
 
-public partial class ReadAll
+public abstract class ReadAll
 {
+    public record ReadQuery<TEntity> : IRequest<List<TEntity>> where TEntity : ResourceBase;
+    
     public class QueryHandler<TEntity> : IRequestHandler<ReadQuery<TEntity>, List<TEntity>> 
         where TEntity : ResourceBase
     {
