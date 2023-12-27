@@ -2,8 +2,10 @@ using AutoMapper;
 using Business.Repository;
 using Microsoft.AspNetCore.Mvc;
 using DataAccess.Data;
+using DataAccess.Data.Models;
 using MediatR;
 using Models;
+using MovieWebAssembly_Api.Requests.Generic;
 using MovieWebAssembly_Api.Requests.HotelRooms;
 
 namespace MovieWebAssembly_Api.Controllers;
@@ -22,7 +24,7 @@ public class HotelRoomController : Controller
     [HttpGet]
     public async Task<IActionResult> GetHotelRooms()
     {
-        var result = await _mediator.Send(new GetHotelRoomsQuery());
+        var result = await _mediator.Send(new ReadAll.ReadQuery<HotelRoom>());
         return Ok(result);
     }
 
