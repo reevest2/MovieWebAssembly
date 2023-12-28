@@ -83,7 +83,3 @@ public abstract class WriteResourceCommand<TModel, TEntity> where TEntity : Reso
         }
     }
 }
-
-public class result
-{
-}
