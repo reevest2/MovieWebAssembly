@@ -59,6 +59,12 @@ public class HotelRoomController : Controller
     {
         var command = new WriteResourceCommand<HotelRoomDTO,HotelRoom>.DeleteResourceCommand(Id);
         var result = await _mediator.Send(new DeleteHotelRoomCommand(Id));
+
+        if (!result)
+        {
+            return NotFound(command);
+        }
+        
         return Ok(command);
     }
 }
