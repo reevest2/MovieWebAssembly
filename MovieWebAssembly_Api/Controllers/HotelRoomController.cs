@@ -58,13 +58,7 @@ public class HotelRoomController : Controller
     public async Task<IActionResult> UpdateHotelRoom(int Id)
     {
         var command = new WriteResourceCommand<HotelRoomDTO,HotelRoom>.DeleteResourceCommand(Id);
-        var result = await _mediator.Send(new DeleteHotelRoomCommand(Id));
-
-        if (!result)
-        {
-            return NotFound(command);
-        }
-        
-        return Ok(command);
+        var result = await _mediator.Send(command);
+        return Ok(result);
     }
 }

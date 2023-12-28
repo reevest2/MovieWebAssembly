@@ -64,8 +64,26 @@ public abstract class WriteResourceCommand<TModel, TEntity> where TEntity : Reso
 
         public async Task<TModel> Handle(DeleteResourceCommand request, CancellationToken cancellationToken)
         {
-            await _repository.DeleteResource(request.Id);
-            return default(TModel);
+            var entityToDelete = await _repository.GetByIdAsync(request.Id);
+
+            if (entityToDelete == null)
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            var modelToDelete = _mapper.Map<TEntity, TModel>(entityToDelete);
+            
+            var result = await _repository.DeleteResource(request.Id);
+            if (!result)
+            {
+                throw new NotImplementedException("await _repository.DeleteResource(request.Id) result returned false");
+            }
+            
+            return modelToDelete;
         }
     }
+}
+
+public class result
+{
 }
