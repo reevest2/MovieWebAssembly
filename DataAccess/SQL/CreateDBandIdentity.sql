@@ -2,11 +2,22 @@ CREATE DATABASE MovieWebAssemblyAppDatabse;
 USE MovieWebAssemblyAppDatabse;
 
 
--- Creating the Identity schema
-CREATE SCHEMA [Identity];
-GO
+-- Creating Scehema
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Identity')
+BEGIN
+    EXEC('CREATE SCHEMA Identity')
+END
 
--- Creating the AspNetUsers table
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Core')
+BEGIN
+    EXEC('CREATE SCHEMA Core')
+END
+
+
+
+-- Creating Identity tables
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Core].[HotelRooms]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [Identity].[AspNetUsers]
 (
     [Id] NVARCHAR(450) NOT NULL,
@@ -26,9 +37,10 @@ CREATE TABLE [Identity].[AspNetUsers]
     [AccessFailedCount] INT NOT NULL,
     CONSTRAINT [PK_AspNetUsers] PRIMARY KEY ([Id])
 );
-GO
+END
 
--- Creating the AspNetRoles table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Core].[HotelRooms]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [Identity].[AspNetRoles]
 (
     [Id] NVARCHAR(450) NOT NULL,
@@ -37,9 +49,10 @@ CREATE TABLE [Identity].[AspNetRoles]
     [ConcurrencyStamp] NVARCHAR(MAX),
     CONSTRAINT [PK_AspNetRoles] PRIMARY KEY ([Id])
 );
-GO
+END
 
--- Creating the AspNetUserRoles table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Core].[HotelRooms]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [Identity].[AspNetUserRoles]
 (
     [UserId] NVARCHAR(450) NOT NULL,
@@ -50,9 +63,10 @@ CREATE TABLE [Identity].[AspNetUserRoles]
     CONSTRAINT [FK_AspNetUserRoles_AspNetUsers_UserId] FOREIGN KEY ([UserId]) 
         REFERENCES [Identity].[AspNetUsers] ([Id]) ON DELETE CASCADE
 );
-GO
+END
 
--- Creating the AspNetUserLogins table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Core].[HotelRooms]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [Identity].[AspNetUserLogins]
 (
     [LoginProvider] NVARCHAR(128) NOT NULL,
@@ -63,9 +77,10 @@ CREATE TABLE [Identity].[AspNetUserLogins]
     CONSTRAINT [FK_AspNetUserLogins_AspNetUsers_UserId] FOREIGN KEY ([UserId]) 
         REFERENCES [Identity].[AspNetUsers] ([Id]) ON DELETE CASCADE
 );
-GO
+END
 
--- Creating the AspNetUserClaims table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Core].[HotelRooms]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [Identity].[AspNetUserClaims]
 (
     [Id] INT IDENTITY(1,1) NOT NULL,
@@ -76,9 +91,10 @@ CREATE TABLE [Identity].[AspNetUserClaims]
     CONSTRAINT [FK_AspNetUserClaims_AspNetUsers_UserId] FOREIGN KEY ([UserId]) 
         REFERENCES [Identity].[AspNetUsers] ([Id]) ON DELETE CASCADE
 );
-GO
+END
 
--- Creating the AspNetRoleClaims table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Core].[HotelRooms]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [Identity].[AspNetRoleClaims]
 (
     [Id] INT IDENTITY(1,1) NOT NULL,
@@ -89,9 +105,10 @@ CREATE TABLE [Identity].[AspNetRoleClaims]
     CONSTRAINT [FK_AspNetRoleClaims_AspNetRoles_RoleId] FOREIGN KEY ([RoleId]) 
         REFERENCES [Identity].[AspNetRoles] ([Id]) ON DELETE CASCADE
 );
-GO
+END
 
--- Creating the AspNetUserTokens table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Core].[HotelRooms]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [Identity].[AspNetUserTokens]
 (
     [UserId] NVARCHAR(450) NOT NULL,
@@ -102,4 +119,38 @@ CREATE TABLE [Identity].[AspNetUserTokens]
     CONSTRAINT [FK_AspNetUserTokens_AspNetUsers_UserId] FOREIGN KEY ([UserId]) 
         REFERENCES [Identity].[AspNetUsers] ([Id]) ON DELETE CASCADE
 );
-GO
+END
+
+--Creating Core Tables
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Core].[HotelRooms]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [Core].[HotelRooms] (
+    Id INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(255),
+    Occupancy INT,
+    RegularRate FLOAT,
+    Details NVARCHAR(MAX),
+    SqFt NVARCHAR(255),
+    CreatedBy NVARCHAR(255),
+    CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UpdatedBy NVARCHAR(255),
+    UpdatedDate DATETIME
+)
+END
+
+
+--Insert Test Data
+MERGE INTO [Core].[HotelRooms] AS target
+USING (
+    VALUES
+        ('Room 101', 2, 150.00, 'Standard room with a double bed', '250 sq.ft', 'John Doe', GETDATE(), 'Jane Smith', GETDATE()),
+        ('Room 202', 4, 250.00, 'Deluxe room with two queen beds and a balcony', '400 sq.ft', 'John Doe', GETDATE(), 'Jane Smith', GETDATE()),
+        ('Room 303', 1, 100.00, 'Single room with a twin bed', '200 sq.ft', 'John Doe', GETDATE(), 'Jane Smith', GETDATE()),
+        ('Room 404', 3, 200.00, 'Premium room with a king bed and a Jacuzzi', '500 sq.ft', 'John Doe', GETDATE(), 'Jane Smith', GETDATE())
+) AS source(Name, Occupancy, RegularRate, Details, SqFt, CreatedBy, CreatedDate, UpdatedBy, UpdatedDate)
+ON (target.Name = source.Name AND target.Occupancy = source.Occupancy AND target.RegularRate = source.RegularRate)
+WHEN NOT MATCHED THEN
+    INSERT (Name, Occupancy, RegularRate, Details, SqFt, CreatedBy, CreatedDate, UpdatedBy, UpdatedDate)
+    VALUES (source.Name, source.Occupancy, source.RegularRate, source.Details, source.SqFt, source.CreatedBy, source.CreatedDate, source.UpdatedBy, source.UpdatedDate);
+
+
