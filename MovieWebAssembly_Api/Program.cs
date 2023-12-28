@@ -27,7 +27,23 @@ var dataAccessAssembly = Assembly.Load("DataAccess");
 var entityTypes = dataAccessAssembly.GetTypes()
     .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic && typeof(ResourceBase).IsAssignableFrom(t));
 
-// Register each query handler for the found entity types
+// Register GetResourceQuery for ReadAll
+foreach (var entityType in entityTypes)
+{
+    var dtoName = $"Models.{entityType.Name}DTO";
+    var dtoType = dtosAssembly.GetType($"{dtoName}", throwOnError: false);
+    if (dtoType != null)
+    {
+        var handlerClosedType = typeof(GetResourceQuery<,>.ReadAllQueryHandler).MakeGenericType(dtoType, entityType);
+        var requestClosedType = typeof(GetResourceQuery<,>.ReadAllQuery).MakeGenericType(dtoType, entityType);
+        
+        var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, typeof(List<>).MakeGenericType(dtoType));
+        
+        builder.Services.AddTransient(iRequestHandlerClosedType, handlerClosedType);
+    }
+}
+
+// Register GetResourceQuery for ReadById
 foreach (var entityType in entityTypes)
 {
     // Assume DTOs follow naming convention of EntityName + "DTO"
@@ -38,11 +54,11 @@ foreach (var entityType in entityTypes)
     if (dtoType != null)
     {
         // Find or create the closed types for the handler and request
-        var handlerClosedType = typeof(ReadAll<,>.QueryHandler).MakeGenericType(dtoType, entityType);
-        var requestClosedType = typeof(ReadAll<,>.ReadQuery).MakeGenericType(dtoType, entityType);
+        var handlerClosedType = typeof(GetResourceQuery<,>.ReadByIdQueryHandler).MakeGenericType(dtoType, entityType);
+        var requestClosedType = typeof(GetResourceQuery<,>.ReadByIdQuery).MakeGenericType(dtoType, entityType);
         
         // IRequestHandler interface type closed with request and response types
-        var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, typeof(List<>).MakeGenericType(dtoType));
+        var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, dtoType);
         
         // Register handler in the service collection
         builder.Services.AddTransient(iRequestHandlerClosedType, handlerClosedType);

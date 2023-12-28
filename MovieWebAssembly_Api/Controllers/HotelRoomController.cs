@@ -24,13 +24,8 @@ public class HotelRoomController : Controller
     [HttpGet]
     public async Task<IActionResult> GetAllHotelRooms()
     {
-        // Create a new ReadQuery instance
-        var query = new ReadAll<HotelRoomDTO, HotelRoom>.ReadQuery();
-
-        // Send the query to MediatR which will trigger the corresponding handler
+        var query = new GetResourceQuery<HotelRoomDTO,HotelRoom>.ReadAllQuery();
         var hotelRooms = await _mediator.Send(query);
-
-        // Return the list of hotel room models
         return Ok(hotelRooms);
     }
 
@@ -38,7 +33,8 @@ public class HotelRoomController : Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> GetHotelRoomById(int id)
     {
-        var result = await _mediator.Send(new GetHotelRoomByIdQuery(id));
+        var query = new GetResourceQuery<HotelRoomDTO,HotelRoom>.ReadByIdQuery(id);
+        var result = await _mediator.Send(query);
         return Ok(result);
     }
 
