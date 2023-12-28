@@ -9,6 +9,8 @@ public abstract class WriteResourceCommand<TModel, TEntity> where TEntity : Reso
 {
     public record CreateResourceCommand(TModel Dto) : IRequest<TModel>;
     public record UpdateResourceCommand(TModel Dto, int Id) : IRequest<TModel>;
+
+    public record DeleteResourceCommand(int Id) : IRequest<TModel>;
     public class CreateResourceCommandHandler : IRequestHandler<CreateResourceCommand, TModel>
     {
         private readonly IResourceRepository<TEntity> _repository;
@@ -46,6 +48,24 @@ public abstract class WriteResourceCommand<TModel, TEntity> where TEntity : Reso
             var updatedEntity = await _repository.UpdateResource(entityToUpdate, request.Id);
             var model = _mapper.Map<TModel>(updatedEntity);
             return model;
+        }
+    }
+    
+    public class DeleteResourceCommandHandler : IRequestHandler<DeleteResourceCommand, TModel>
+    {
+        private readonly IResourceRepository<TEntity> _repository;
+        private readonly IMapper _mapper;
+
+        public DeleteResourceCommandHandler(IResourceRepository<TEntity> repository, IMapper mapper)
+        {
+            _repository = repository;
+            _mapper = mapper;
+        }
+
+        public async Task<TModel> Handle(DeleteResourceCommand request, CancellationToken cancellationToken)
+        {
+            await _repository.DeleteResource(request.Id);
+            return default(TModel);
         }
     }
 }

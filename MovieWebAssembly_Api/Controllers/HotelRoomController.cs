@@ -54,10 +54,11 @@ public class HotelRoomController : Controller
         return Ok(result);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> UpdateHotelRoom(int id)
+    [HttpDelete("Delete/{Id}")]
+    public async Task<IActionResult> UpdateHotelRoom(int Id)
     {
-        var result = await _mediator.Send(new DeleteHotelRoomCommand(id));
-        return Ok(result);
+        var command = new WriteResourceCommand<HotelRoomDTO,HotelRoom>.DeleteResourceCommand(Id);
+        var result = await _mediator.Send(new DeleteHotelRoomCommand(Id));
+        return Ok(command);
     }
 }
