@@ -47,7 +47,5 @@ namespace MovieWebAssembly_Api.Requests.Generic
                 return _mapper.Map<TModel>(entities);
             }
         }
-        
-        
     }
 }

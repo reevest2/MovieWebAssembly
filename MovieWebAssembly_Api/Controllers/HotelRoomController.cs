@@ -41,7 +41,8 @@ public class HotelRoomController : Controller
     [HttpPost("Create")]
     public async Task<IActionResult> CreateHotelRoom(HotelRoomDTO hotelRoomDto)
     {
-        var result = await _mediator.Send(new CreateHotelRoomCommand(hotelRoomDto));
+        var command = new WriteResourceCommand<HotelRoomDTO, HotelRoom>.CreateResourceCommand(hotelRoomDto);
+        var result = await _mediator.Send(command);
         return Ok(result);
     }
 

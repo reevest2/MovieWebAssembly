@@ -9,9 +9,9 @@ using DataAccess.Data.Models;
 
 namespace MovieWebAssembly_Api.Requests.HotelRooms
 {
-    public record CreateHotelRoomCommand(HotelRoomDTO HotelRoomDto) : IRequest<bool>
+    public record CreateHotelRoomCommand(HotelRoomDTO HotelRoomDto) : IRequest<HotelRoom>
     {
-        public class Handler : IRequestHandler<CreateHotelRoomCommand, bool>
+        public class Handler : IRequestHandler<CreateHotelRoomCommand, HotelRoom>
         {
             private readonly IHotelRoomRepository _hotelRoomRepository;
             private readonly IMapper _mapper;
@@ -22,11 +22,11 @@ namespace MovieWebAssembly_Api.Requests.HotelRooms
                 _mapper = mapper;
             }
             
-            public async Task<bool> Handle(CreateHotelRoomCommand request, CancellationToken cancellationToken)
+            public async Task<HotelRoom> Handle(CreateHotelRoomCommand request, CancellationToken cancellationToken)
             {
                 var room = _mapper.Map<HotelRoom>(request.HotelRoomDto);
                 var result = await _hotelRoomRepository.CreateResource(room);
-                return result;
+                return room;
             }
         }
     }

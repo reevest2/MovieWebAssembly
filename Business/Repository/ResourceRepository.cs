@@ -8,7 +8,7 @@ public interface IResourceRepository<T> where T : ResourceBase
 {
     Task<List<T>> GetAllAsync();
     Task<T> GetByIdAsync(int id);
-    Task<bool> CreateResource(T resource);
+    Task<T> CreateResource(T resource);
     Task<bool> UpdateResource(T resource);
     Task<bool> DeleteResource(int id);
 }
@@ -32,10 +32,16 @@ public class ResourceRepository<TResource> : IResourceRepository<TResource> wher
         return await _dbContext.Set<TResource>().FindAsync(id);
     }
 
-    public virtual async Task<bool> CreateResource(TResource resource)
+    public virtual async Task<TResource> CreateResource(TResource resource)
     {
         await _dbContext.Set<TResource>().AddAsync(resource);
-        return await _dbContext.SaveChangesAsync() > 0;
+        var result = await _dbContext.SaveChangesAsync() > 0;
+        if (!result)
+        {
+            return null;
+        }
+
+        return resource;
     }
 
     public virtual async Task<bool> UpdateResource(TResource resource)
