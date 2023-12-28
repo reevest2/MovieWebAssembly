@@ -65,6 +65,7 @@ foreach (var entityType in entityTypes)
     }
 }
 
+//Register WriteResourceCommand for Create
 foreach (var entityType in entityTypes)
 {
     // Assume DTOs follow naming convention of EntityName + "DTO"
@@ -77,6 +78,28 @@ foreach (var entityType in entityTypes)
         // Find or create the closed types for the handler and request
         var handlerClosedType = typeof(WriteResourceCommand<,>.CreateResourceCommandHandler).MakeGenericType(dtoType, entityType);
         var requestClosedType = typeof(WriteResourceCommand<,>.CreateResourceCommand).MakeGenericType(dtoType, entityType);
+        
+        // IRequestHandler interface type closed with request and response types
+        var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, dtoType);
+        
+        // Register handler in the service collection
+        builder.Services.AddTransient(iRequestHandlerClosedType, handlerClosedType);
+    }
+}
+
+//Register WriteResourceCommand for Update
+foreach (var entityType in entityTypes)
+{
+    // Assume DTOs follow naming convention of EntityName + "DTO"
+    var dtoName = $"Models.{entityType.Name}DTO";
+    // Find corresponding DTO type in DTOs assembly
+    var dtoType = dtosAssembly.GetType($"{dtoName}", throwOnError: false);
+    // If corresponding DTO type is found
+    if (dtoType != null)
+    {
+        // Find or create the closed types for the handler and request
+        var handlerClosedType = typeof(WriteResourceCommand<,>.UpdateResourceCommandHandler).MakeGenericType(dtoType, entityType);
+        var requestClosedType = typeof(WriteResourceCommand<,>.UpdateResourceCommand).MakeGenericType(dtoType, entityType);
         
         // IRequestHandler interface type closed with request and response types
         var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, dtoType);

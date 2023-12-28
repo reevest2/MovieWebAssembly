@@ -46,10 +46,11 @@ public class HotelRoomController : Controller
         return Ok(result);
     }
 
-    [HttpPost("Update")]
-    public async Task<IActionResult> UpdateHotelRoom(HotelRoomDTO hotelRoomDto)
+    [HttpPost("Update/{Id}")]
+    public async Task<IActionResult> UpdateHotelRoom(HotelRoomDTO hotelRoomDto,int Id)
     {
-        var result = await _mediator.Send(new UpdateHotelRoomCommand(hotelRoomDto));
+        var command = new WriteResourceCommand<HotelRoomDTO, HotelRoom>.UpdateResourceCommand(hotelRoomDto, Id);
+        var result = await _mediator.Send(command);
         return Ok(result);
     }
 

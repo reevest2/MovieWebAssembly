@@ -9,7 +9,7 @@ using DataAccess.Data.Models;
 
 namespace MovieWebAssembly_Api.Requests.HotelRooms
 {
-    public record UpdateHotelRoomCommand(HotelRoomDTO HotelRoomDto) : IRequest<bool>
+    /*public record UpdateHotelRoomCommand(HotelRoomDTO HotelRoomDto) : IRequest<bool>
     {
         public class Handler : IRequestHandler<UpdateHotelRoomCommand, bool>
         {
@@ -29,5 +29,5 @@ namespace MovieWebAssembly_Api.Requests.HotelRooms
                 return result;
             }
         }
-    }
+    }*/
 }
