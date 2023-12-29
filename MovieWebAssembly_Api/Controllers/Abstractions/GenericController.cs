@@ -44,7 +44,7 @@ public abstract class ReadController<TDto, TEntity> : Controller, IReadControlle
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public virtual async Task<IActionResult> GetAll()
     {
         var query = new GetResourceQuery<TDto, TEntity>.ReadAllQuery();
         var items = await _mediator.Send(query);
@@ -52,7 +52,7 @@ public abstract class ReadController<TDto, TEntity> : Controller, IReadControlle
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public virtual async Task<IActionResult> GetById(int id)
     {
         var query = new GetResourceQuery<TDto, TEntity>.ReadByIdQuery(id);
         var item = await _mediator.Send(query);
@@ -73,7 +73,7 @@ public abstract class WriteController<TDto, TEntity> : Controller, IWriteControl
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(TDto dto)
+    public virtual async Task<IActionResult> Create(TDto dto)
     {
         var command = new WriteResourceCommand<TDto, TEntity>.CreateResourceCommand(dto);
         var result = await _mediator.Send(command);
@@ -81,7 +81,7 @@ public abstract class WriteController<TDto, TEntity> : Controller, IWriteControl
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, TDto dto)
+    public virtual async Task<IActionResult> Update(int id, TDto dto)
     {
         var command = new WriteResourceCommand<TDto, TEntity>.UpdateResourceCommand(dto, id);
         var result = await _mediator.Send(command);
@@ -89,7 +89,7 @@ public abstract class WriteController<TDto, TEntity> : Controller, IWriteControl
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public virtual async Task<IActionResult> Delete(int id)
     {
         var command = new WriteResourceCommand<TDto, TEntity>.DeleteResourceCommand(id);
         var result = await _mediator.Send(command);
@@ -109,7 +109,7 @@ public abstract class ReadWriteController<TDto, TEntity> : Controller, IReadWrit
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public virtual async Task<IActionResult> GetAll()
     {
         var query = new GetResourceQuery<TDto, TEntity>.ReadAllQuery();
         var items = await _mediator.Send(query);
@@ -117,7 +117,7 @@ public abstract class ReadWriteController<TDto, TEntity> : Controller, IReadWrit
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public virtual async Task<IActionResult> GetById(int id)
     {
         var query = new GetResourceQuery<TDto, TEntity>.ReadByIdQuery(id);
         var item = await _mediator.Send(query);
@@ -125,7 +125,7 @@ public abstract class ReadWriteController<TDto, TEntity> : Controller, IReadWrit
     }
     
     [HttpPost]
-    public async Task<IActionResult> Create(TDto dto)
+    public virtual async Task<IActionResult> Create(TDto dto)
     {
         var command = new WriteResourceCommand<TDto, TEntity>.CreateResourceCommand(dto);
         var result = await _mediator.Send(command);
@@ -133,7 +133,7 @@ public abstract class ReadWriteController<TDto, TEntity> : Controller, IReadWrit
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, TDto dto)
+    public virtual async Task<IActionResult> Update(int id, TDto dto)
     {
         var command = new WriteResourceCommand<TDto, TEntity>.UpdateResourceCommand(dto, id);
         var result = await _mediator.Send(command);
@@ -141,7 +141,7 @@ public abstract class ReadWriteController<TDto, TEntity> : Controller, IReadWrit
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public virtual async Task<IActionResult> Delete(int id)
     {
         var command = new WriteResourceCommand<TDto, TEntity>.DeleteResourceCommand(id);
         var result = await _mediator.Send(command);
