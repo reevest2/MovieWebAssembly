@@ -1,13 +1,10 @@
 using AutoMapper;
 using Business.Repository;
-using DataAccess.Data;
+using DataAccess.Data.Models;
 using MediatR;
 using Models;
-using System.Threading;
-using System.Threading.Tasks;
-using DataAccess.Data.Models;
 
-namespace MovieWebAssembly_Api.Requests.HotelRooms
+namespace MovieWebAssembly_Api.Requests.Resources.HotelRooms
 {
     public record CreateHotelRoomCommand(HotelRoomDTO HotelRoomDto) : IRequest<HotelRoom>
     {

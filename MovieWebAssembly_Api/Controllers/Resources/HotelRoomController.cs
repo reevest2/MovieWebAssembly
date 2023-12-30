@@ -1,15 +1,10 @@
-using AutoMapper;
-using Business.Repository;
-using Microsoft.AspNetCore.Mvc;
-using DataAccess.Data;
 using DataAccess.Data.Models;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using MovieWebAssembly_Api.Controllers.Abstractions;
-using MovieWebAssembly_Api.Requests.Generic;
-using MovieWebAssembly_Api.Requests.HotelRooms;
 
-namespace MovieWebAssembly_Api.Controllers;
+namespace MovieWebAssembly_Api.Controllers.Resources;
 
 [ApiController]
 [Route("[controller]")]

@@ -32,7 +32,7 @@ public interface IReadWriteController<TDto, TEntity> : IReadController<TDto, TEn
 }
 
 [ApiController]
-public abstract class ReadController<TDto, TEntity> : Controller, IReadController<TDto, TEntity>
+public abstract class ReadController<TDto, TEntity> : ControllerBase, IReadController<TDto, TEntity>
     where TDto : class
     where TEntity : ResourceBase
 {
@@ -61,7 +61,7 @@ public abstract class ReadController<TDto, TEntity> : Controller, IReadControlle
 }
 
 [ApiController]
-public abstract class WriteController<TDto, TEntity> : Controller, IWriteController<TDto, TEntity>
+public abstract class WriteController<TDto, TEntity> : ControllerBase, IWriteController<TDto, TEntity>
     where TDto : class
     where TEntity :  ResourceBase
 {
@@ -97,7 +97,7 @@ public abstract class WriteController<TDto, TEntity> : Controller, IWriteControl
     }
 }
 
-public abstract class ReadWriteController<TDto, TEntity> : Controller, IReadWriteController<TDto, TEntity>
+public abstract class ReadWriteController<TDto, TEntity> : ControllerBase, IReadWriteController<TDto, TEntity>
     where TDto : class
     where TEntity : ResourceBase
 {

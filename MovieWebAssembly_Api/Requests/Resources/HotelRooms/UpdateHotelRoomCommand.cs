@@ -1,13 +1,4 @@
-using AutoMapper;
-using Business.Repository;
-using DataAccess.Data;
-using MediatR;
-using Models;
-using System.Threading;
-using System.Threading.Tasks;
-using DataAccess.Data.Models;
-
-namespace MovieWebAssembly_Api.Requests.HotelRooms
+namespace MovieWebAssembly_Api.Requests.Resources.HotelRooms
 {
     /*public record UpdateHotelRoomCommand(HotelRoomDTO HotelRoomDto) : IRequest<bool>
     {
