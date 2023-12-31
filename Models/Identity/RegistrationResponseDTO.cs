@@ -1,7 +1,5 @@
 namespace Models.Identity;
 
-public class RegistrationResponseDTO
+public class RegistrationResponseDTO : GenericResponseDTO
 {
-    public bool IsRegistrationSuccessful { get; set; }
-    public IEnumerable<string> Errors { get; set; }
 }

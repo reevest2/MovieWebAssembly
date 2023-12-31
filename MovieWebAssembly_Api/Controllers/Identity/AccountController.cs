@@ -48,7 +48,7 @@ public class AccountController : Controller
             return BadRequest(new RegistrationResponseDTO
             {
                 Errors = errors, 
-                IsRegistrationSuccessful = false
+                IsSuccessful = false
             });
         }
 
@@ -60,7 +60,7 @@ public class AccountController : Controller
             return BadRequest(new RegistrationResponseDTO
             {
                 Errors = errors,
-                IsRegistrationSuccessful = false
+                IsSuccessful = false
             });
         }
 
