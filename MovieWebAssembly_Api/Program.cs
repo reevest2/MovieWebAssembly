@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Reflection;
 using Business.Repository;
 using DataAccess.Data;
@@ -22,8 +23,11 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 builder.Services.AddScoped<IResourceRepository<HotelRoom>, HotelRoomRepository>();
 builder.Services.AddScoped<IDbInitializer, ApplicationDbInitizlier>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddRoleManager<RoleManager<IdentityRole>>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", x =>
     {
@@ -31,12 +35,7 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
-});
-
-
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+});*/
 
 var dtosAssembly = Assembly.Load("Models");
 var dataAccessAssembly = Assembly.Load("DataAccess");
