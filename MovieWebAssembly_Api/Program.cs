@@ -2,8 +2,10 @@ using System.Reflection;
 using Business.Repository;
 using DataAccess.Data;
 using DataAccess.Data.Abstractions;
+using DataAccess.Data.Initizlier;
 using DataAccess.Data.Models;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using MovieWebAssembly_Api.Requests.Generic;
@@ -19,6 +21,22 @@ builder.Services.AddCors(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 builder.Services.AddScoped<IResourceRepository<HotelRoom>, HotelRoomRepository>();
+builder.Services.AddScoped<IDbInitializer, ApplicationDbInitizlier>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", x =>
+    {
+        x.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 var dtosAssembly = Assembly.Load("Models");
 var dataAccessAssembly = Assembly.Load("DataAccess");
@@ -130,5 +148,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+
+// Initialize Db
+using (var scope = app.Services.CreateScope())
+{
+    var scopedServices = scope.ServiceProvider;
+    var dbInitializer = scopedServices.GetRequiredService<IDbInitializer>();
+    dbInitializer.Initialize();
+}
 
 app.Run();

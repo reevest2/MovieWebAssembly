@@ -1,10 +1,9 @@
 using AutoMapper;
 using Business.Repository;
-using DataAccess.Data;
 using MediatR;
 using Models;
 
-namespace MovieWebAssembly_Api.Requests.HotelRooms;
+namespace MovieWebAssembly_Api.Requests.Resources.HotelRooms;
 
 public record GetHotelRoomByIdQuery(int id) : IRequest<HotelRoomDTO>
 {
