@@ -23,6 +23,16 @@ builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 builder.Services.AddScoped<IResourceRepository<HotelRoom>, HotelRoomRepository>();
 builder.Services.AddScoped<IDbInitializer, ApplicationDbInitizlier>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", x =>
+    {
+        x.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -143,7 +153,6 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var scopedServices = scope.ServiceProvider;
-    var dbContext = scopedServices.GetRequiredService<ApplicationDbContext>();
     var dbInitializer = scopedServices.GetRequiredService<IDbInitializer>();
     dbInitializer.Initialize();
 }
