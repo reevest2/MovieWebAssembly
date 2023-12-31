@@ -18,16 +18,17 @@ public class ApplicationDbInitizlier : IDbInitializer
     {
         _dbContext = dbContext;
     }
+    public void Initialize()
+    {
+        
+        CreateDb();
+        /*CreateTables();
+        InsertTestData();*/
+    }
 
     public bool DoesDatabaseExist()
     {
         return _dbContext.Database.CanConnect();
-    }
-
-    public void Initialize()
-    {
-        CreateDb();
-        CreateTables();
     }
 
     private void CreateDb()
@@ -35,43 +36,22 @@ public class ApplicationDbInitizlier : IDbInitializer
         if (!DoesDatabaseExist())
         {
             var assembly = Assembly.GetExecutingAssembly();
-            string sqlFilePath = @"C:\Repos\MovieWebAssembly\DataAccess\SQL\CreateDBandIdentity.sql";
-            string sqlScript = File.ReadAllText(sqlFilePath);
-
-            using (var connection = _dbContext.Database.GetDbConnection())
-            {
-                connection.Open();
-
-                using (var command = new SqlCommand(sqlScript, (SqlConnection)connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-                connection.Close();
-            }
-        }
-    }
-
-    private void CreateTables()
-    {
-        if (DoesDatabaseExist())
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            string sqlFilePath = @"C:\Repos\MovieWebAssembly\DataAccess\SQL\CreateCoreSchemaAndTables.sql";
+            string sqlFilePath = @"C:\Repos\MovieWebAssembly\DataAccess\SQL\InitializeDbScript.sql";
             string sqlScript = File.ReadAllText(sqlFilePath);
             string[] scriptBatches = Regex.Split(sqlScript, @"^\s*GO\s*$",
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
-           
-            using (var connection = _dbContext.Database.GetDbConnection())
+
+            using (var connection =
+                   new SqlConnection(
+                       "Server=DESKTOP-H9FBDS7;Trusted_Connection=True;MultipleActiveResultSets=True;TrustServerCertificate=True"))
             {
                 connection.Open();
                 foreach (string batch in scriptBatches)
                 {
-                    if (!string.IsNullOrWhiteSpace(batch))
+                    using (var command = new SqlCommand(batch, connection))
                     {
-                        using (var command = new SqlCommand(batch, (SqlConnection)connection))
+                        if (!string.IsNullOrWhiteSpace(batch))
                         {
-                            // Execute the batch.
                             command.ExecuteNonQuery();
                         }
                     }
@@ -81,4 +61,62 @@ public class ApplicationDbInitizlier : IDbInitializer
             }
         }
     }
+
+    /*private void CreateTables()
+    {
+        if (DoesDatabaseExist())
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            string sqlFilePath = @"C:\Repos\MovieWebAssembly\DataAccess\SQL\CreateCoreSchemaAndTables.sql";
+            string sqlScript = File.ReadAllText(sqlFilePath);
+            string[] scriptBatches = Regex.Split(sqlScript, @"^\s*GO\s*$",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+            using (var connection = _dbContext.Database.GetDbConnection())
+            {
+                connection.Open();
+                foreach (string batch in scriptBatches)
+                {
+                    if (!string.IsNullOrWhiteSpace(batch))
+                    {
+                        using (var command = new SqlCommand(batch, (SqlConnection)connection))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                connection.Close();
+            }
+        }
+    }
+
+    private void InsertTestData()
+    {
+        if (DoesDatabaseExist())
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            string sqlFilePath = @"C:\Repos\MovieWebAssembly\DataAccess\SQL\MergeIntoCoreSchemaTestData.sql";
+            string sqlScript = File.ReadAllText(sqlFilePath);
+            string[] scriptBatches = Regex.Split(sqlScript, @"^\s*GO\s*$",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+            using (var connection = _dbContext.Database.GetDbConnection())
+            {
+                connection.Open();
+                foreach (string batch in scriptBatches)
+                {
+                    if (!string.IsNullOrWhiteSpace(batch))
+                    {
+                        using (var command = new SqlCommand(batch, (SqlConnection)connection))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                connection.Close();
+            }
+        }
+    }*/
 }

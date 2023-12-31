@@ -1,5 +1,5 @@
 
-USE MovieWebAssemblyAppDatabase;
+USE [MovieWebAssemblyAppDatabase];
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Core')

@@ -1,4 +1,4 @@
-USE MovieWebAssemblyAppDatabase;
+USE [MovieWebAssemblyAppDatabase];
 GO
 
 MERGE INTO [Core].[HotelRooms] AS target
