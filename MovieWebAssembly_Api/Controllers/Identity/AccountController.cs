@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Models.Identity;
 using MovieWebAssembly_Api.Helper;
@@ -80,14 +79,15 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> SignIn([FromBody] AuthenticationDTO authenticationDTO)
-    {
+    { 
         var result =
             await _signInManager.PasswordSignInAsync(authenticationDTO.UserName, authenticationDTO.Password, false,
                 false);
 
+        var errorMessage = new List<string> { "Invalid Authentication" };
         if (!result.Succeeded)
         {
-            var errorMessage = new List<string> { "Invalid Authentication" };
+            errorMessage.Add("Sign in failed");
             return Unauthorized(new AuthenticationResponseDTO
             {
                 IsSuccessful = false,
@@ -100,7 +100,7 @@ public class AccountController : Controller
             var user = await _userManager.FindByNameAsync(authenticationDTO.UserName);
             if (user == null)
             {
-                var errorMessage = new List<string> { "Invalid Authentication" };
+                errorMessage.Add("User not found");
                 return Unauthorized(new AuthenticationResponseDTO
                 {
                     IsSuccessful = false,
@@ -124,11 +124,25 @@ public class AccountController : Controller
             return Ok(new AuthenticationResponseDTO
             {
                 IsSuccessful = true,
-                Token = encodedToken
+                Token = encodedToken,
+                UserDTO = new UserDTO
+                {
+                    Name = user.UserName,
+                    Id = user.Id,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber
+                }
+                
             });
         }
 
-        return Ok(new NotImplementedException("Should not reach this -- Account Controller => End of SignIn"));
+        errorMessage.Add("Token error");
+        return Ok(new AuthenticationResponseDTO
+        {
+            
+          IsSuccessful  = false,
+          Errors = errorMessage
+        });
     }
 
 

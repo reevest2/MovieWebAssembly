@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-var apiSettings = builder.Configuration.GetSection("ApiSection");
+var apiSettings = builder.Configuration.GetSection("ApiSettings");
 builder.Services.Configure<ApiSettings>(apiSettings);
 
 
