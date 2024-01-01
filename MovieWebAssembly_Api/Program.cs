@@ -1,13 +1,16 @@
 using System.Collections.Immutable;
 using System.Reflection;
+using System.Text;
 using Business.Repository;
 using DataAccess.Data;
 using DataAccess.Data.Abstractions;
 using DataAccess.Data.Initizlier;
 using DataAccess.Data.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Models;
 using MovieWebAssembly_Api.Helper;
 using MovieWebAssembly_Api.Requests.Generic;
@@ -20,9 +23,32 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-var apiSettings = builder.Configuration.GetSection("ApiSettings");
-builder.Services.Configure<ApiSettings>(apiSettings);
+var apiSettingSection = builder.Configuration.GetSection("ApiSettings");
+builder.Services.Configure<ApiSettings>(apiSettingSection);
 
+var apiSettings = apiSettingSection.Get<ApiSettings>();
+var key = Encoding.ASCII.GetBytes(apiSettings.SecretKey);
+builder.Services.AddAuthentication(opt =>
+    {
+        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(x =>
+    {
+        x.RequireHttpsMetadata = false;
+        x.SaveToken = true;
+        x.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidAudience = apiSettings.ValidAudience,
+            ValidIssuer = apiSettings.ValidIssuer,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
