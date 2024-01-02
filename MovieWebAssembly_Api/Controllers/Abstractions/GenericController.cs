@@ -1,6 +1,7 @@
 using DataAccess.Data.Abstractions;
 using DataAccess.Data.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using MovieWebAssembly_Api.Requests.Generic;
@@ -103,6 +104,7 @@ public abstract class ReadWriteController<TDto, TEntity> : ControllerBase, IRead
 {
     protected readonly IMediator _mediator;
 
+    
     protected ReadWriteController(IMediator mediator)
     {
         _mediator = mediator;

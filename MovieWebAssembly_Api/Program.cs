@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Business.Repository;
@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Models;
 using MovieWebAssembly_Api.Helper;
 using MovieWebAssembly_Api.Requests.Generic;
@@ -58,16 +59,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddRoleManager<RoleManager<IdentityRole>>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-/*builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", x =>
-    {
-        x.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});*/
-
 var dtosAssembly = Assembly.Load("Models");
 var dataAccessAssembly = Assembly.Load("DataAccess");
 
@@ -84,9 +75,9 @@ foreach (var entityType in entityTypes)
     {
         var handlerClosedType = typeof(GetResourceQuery<,>.ReadAllQueryHandler).MakeGenericType(dtoType, entityType);
         var requestClosedType = typeof(GetResourceQuery<,>.ReadAllQuery).MakeGenericType(dtoType, entityType);
-        
+
         var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, typeof(List<>).MakeGenericType(dtoType));
-        
+
         builder.Services.AddTransient(iRequestHandlerClosedType, handlerClosedType);
     }
 }
@@ -100,57 +91,57 @@ foreach (var entityType in entityTypes)
     {
         var handlerClosedType = typeof(GetResourceQuery<,>.ReadByIdQueryHandler).MakeGenericType(dtoType, entityType);
         var requestClosedType = typeof(GetResourceQuery<,>.ReadByIdQuery).MakeGenericType(dtoType, entityType);
-        
+
         var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, dtoType);
-        
+
         builder.Services.AddTransient(iRequestHandlerClosedType, handlerClosedType);
     }
 }
 
-//Register WriteResourceCommand for Create
+// Register WriteResourceCommand for Create
 foreach (var entityType in entityTypes)
 {
     var dtoName = $"Models.{entityType.Name}DTO";
-    var dtoType = dtosAssembly.GetType($"{dtoName}", throwOnError: false);
+    var dtoType = dtosAssembly.GetType(dtoName, throwOnError: false);
     if (dtoType != null)
     {
         var handlerClosedType = typeof(WriteResourceCommand<,>.CreateResourceCommandHandler).MakeGenericType(dtoType, entityType);
         var requestClosedType = typeof(WriteResourceCommand<,>.CreateResourceCommand).MakeGenericType(dtoType, entityType);
-        
+
         var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, dtoType);
-        
+
         builder.Services.AddTransient(iRequestHandlerClosedType, handlerClosedType);
     }
 }
 
-//Register WriteResourceCommand for Update
+// Register WriteResourceCommand for Update
 foreach (var entityType in entityTypes)
 {
     var dtoName = $"Models.{entityType.Name}DTO";
-    var dtoType = dtosAssembly.GetType($"{dtoName}", throwOnError: false);
+    var dtoType = dtosAssembly.GetType(dtoName, throwOnError: false);
     if (dtoType != null)
     {
         var handlerClosedType = typeof(WriteResourceCommand<,>.UpdateResourceCommandHandler).MakeGenericType(dtoType, entityType);
         var requestClosedType = typeof(WriteResourceCommand<,>.UpdateResourceCommand).MakeGenericType(dtoType, entityType);
-        
+
         var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, dtoType);
-        
+
         builder.Services.AddTransient(iRequestHandlerClosedType, handlerClosedType);
     }
 }
 
-//Register WriteResourceCommand for Delete
+// Register WriteResourceCommand for Delete
 foreach (var entityType in entityTypes)
 {
     var dtoName = $"Models.{entityType.Name}DTO";
-    var dtoType = dtosAssembly.GetType($"{dtoName}", throwOnError: false);
+    var dtoType = dtosAssembly.GetType(dtoName, throwOnError: false);
     if (dtoType != null)
     {
         var handlerClosedType = typeof(WriteResourceCommand<,>.DeleteResourceCommandHandler).MakeGenericType(dtoType, entityType);
         var requestClosedType = typeof(WriteResourceCommand<,>.DeleteResourceCommand).MakeGenericType(dtoType, entityType);
-        
+
         var iRequestHandlerClosedType = typeof(IRequestHandler<,>).MakeGenericType(requestClosedType, dtoType);
-        
+
         builder.Services.AddTransient(iRequestHandlerClosedType, handlerClosedType);
     }
 }
@@ -160,31 +151,66 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddRouting(option => option.LowercaseUrls = true);
-var app = builder.Build();
-app.UseCors();
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+builder.Services.AddSwaggerGen(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieWebAssembly_Api", Version = "v1" });
+    
+    // Define the OAuth2.0 Bearer Security scheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http, // Change to Http
+        Scheme = "bearer",              // Note the lowercase 'bearer' specification
+        BearerFormat = "JWT"
+    });
 
-app.UseHttpsRedirection();
-app.UseRouting();
+    // Apply the security scheme globally on all controllers and actions
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
+});
 
-app.UseAuthorization();
+    builder.Services.AddRouting(option => option.LowercaseUrls = true);
+    var app = builder.Build();
+    app.UseCors();
+// Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-app.MapControllers();
+    app.UseHttpsRedirection();
+    app.UseRouting();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapControllers();
 
 
 // Initialize Db
-using (var scope = app.Services.CreateScope())
-{
-    var scopedServices = scope.ServiceProvider;
-    var dbInitializer = scopedServices.GetRequiredService<IDbInitializer>();
-    dbInitializer.Initialize();
-}
+    using (var scope = app.Services.CreateScope())
+    {
+        var scopedServices = scope.ServiceProvider;
+        var dbInitializer = scopedServices.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
 
-app.Run();
+    app.Run();

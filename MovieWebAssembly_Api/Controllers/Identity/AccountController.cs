@@ -115,7 +115,7 @@ public class AccountController : Controller
                 issuer: _apiSettings.ValidIssuer,
                 audience: _apiSettings.ValidAudience,
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now,
                 signingCredentials: signinCredentials);
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -162,10 +162,7 @@ public class AccountController : Controller
         };
         var roles = await _userManager.GetRolesAsync(await _userManager.FindByEmailAsync(user.Email));
 
-        foreach (var role in roles)
-        {
-            claims.Add((new Claim(ClaimTypes.Role, role)));
-        }
+        claims.AddRange(roles.Select(role => (new Claim(ClaimTypes.Role, role))));
 
         return claims;
     }
