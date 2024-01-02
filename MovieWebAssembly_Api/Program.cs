@@ -17,6 +17,9 @@ using MovieWebAssembly_Api.Helper;
 using MovieWebAssembly_Api.Requests.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
+var apiSettingSection = builder.Configuration.GetSection("ApiSettings");
+var apiSettings = apiSettingSection.Get<ApiSettings>();
+var key = Encoding.ASCII.GetBytes(apiSettings.SecretKey);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -24,11 +27,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-var apiSettingSection = builder.Configuration.GetSection("ApiSettings");
 builder.Services.Configure<ApiSettings>(apiSettingSection);
-
-var apiSettings = apiSettingSection.Get<ApiSettings>();
-var key = Encoding.ASCII.GetBytes(apiSettings.SecretKey);
 builder.Services.AddAuthentication(opt =>
     {
         opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -50,6 +49,7 @@ builder.Services.AddAuthentication(opt =>
             ClockSkew = TimeSpan.Zero
         };
     });
+
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
@@ -188,7 +188,6 @@ builder.Services.AddSwaggerGen(c =>
 
     builder.Services.AddRouting(option => option.LowercaseUrls = true);
     var app = builder.Build();
-    app.UseCors();
 // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -198,7 +197,7 @@ builder.Services.AddSwaggerGen(c =>
 
     app.UseHttpsRedirection();
     app.UseRouting();
-
+    app.UseCors();
     app.UseAuthentication();
     app.UseAuthorization();
 

@@ -13,7 +13,6 @@ namespace MovieWebAssembly_Api.Controllers.Identity;
 
 [ApiController]
 [Route("[controller]/[action]")]
-[Authorize]
 public class AccountController : Controller
 {
     private readonly SignInManager<IdentityUser> _signInManager;
@@ -33,7 +32,6 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    [AllowAnonymous]
     public async Task<IActionResult> SignUp([FromBody] UserRequestDTO userRequestDTO)
     {
         if (userRequestDTO == null || !ModelState.IsValid)
@@ -77,7 +75,6 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    [AllowAnonymous]
     public async Task<IActionResult> SignIn([FromBody] AuthenticationDTO authenticationDTO)
     { 
         var result =

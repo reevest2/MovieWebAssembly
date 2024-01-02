@@ -16,7 +16,7 @@ public partial class HotelRoomController : ReadWriteController<HotelRoomDTO, Hot
 }
 
     [HttpGet]
-    [Authorize(Roles = "admin3211321321651650")]
+    [Authorize(Roles = "admin")]
     public override async Task<IActionResult> GetAll()
     {
         return await base.GetAll();
