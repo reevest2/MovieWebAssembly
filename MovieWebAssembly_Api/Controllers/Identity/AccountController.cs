@@ -73,6 +73,14 @@ public class AccountController : Controller
 
         return StatusCode(201);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> Logout([FromBody] AuthenticationDTO authenticationDTO)
+    {
+        await _signInManager.SignOutAsync();
+        return Ok(new { Message = "You have successfully logged out." });
+    }
+    
 
     [HttpPost]
     public async Task<IActionResult> SignIn([FromBody] AuthenticationDTO authenticationDTO)
@@ -141,7 +149,6 @@ public class AccountController : Controller
           Errors = errorMessage
         });
     }
-
 
     private SigningCredentials GetSigningCredentials()
     {

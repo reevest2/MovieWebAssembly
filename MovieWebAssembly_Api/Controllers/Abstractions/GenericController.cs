@@ -32,6 +32,7 @@ public interface IReadWriteController<TDto, TEntity> : IReadController<TDto, TEn
 
 }
 
+[Authorize(Roles = "admin")]
 [ApiController]
 public abstract class ReadController<TDto, TEntity> : ControllerBase, IReadController<TDto, TEntity>
     where TDto : class
@@ -61,6 +62,7 @@ public abstract class ReadController<TDto, TEntity> : ControllerBase, IReadContr
     }
 }
 
+[Authorize(Roles = "admin")]
 [ApiController]
 public abstract class WriteController<TDto, TEntity> : ControllerBase, IWriteController<TDto, TEntity>
     where TDto : class
@@ -98,6 +100,7 @@ public abstract class WriteController<TDto, TEntity> : ControllerBase, IWriteCon
     }
 }
 
+[Authorize(Roles = "admin")]
 public abstract class ReadWriteController<TDto, TEntity> : ControllerBase, IReadWriteController<TDto, TEntity>
     where TDto : class
     where TEntity : ResourceBase
