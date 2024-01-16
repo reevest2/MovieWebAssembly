@@ -32,6 +32,15 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddRoleManager<RoleManager<IdentityRole>>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 403;
+        return Task.CompletedTask;
+    };
+});
+
 var dtosAssembly = Assembly.Load("Models");
 var dataAccessAssembly = Assembly.Load("DataAccess");
 
@@ -139,6 +148,7 @@ builder.Services.AddSwaggerGen();
     app.UseCors();
     app.UseAuthentication();
     app.UseAuthorization();
+    
 
     app.MapControllers();
 
