@@ -124,40 +124,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieWebAssembly_Api", Version = "v1" });
-    
-    // Define the OAuth2.0 Bearer Security scheme
-    c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme.",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http, 
-        Scheme = "bearer",              
-        BearerFormat = "JWT"
-    });
-
-    // Apply the security scheme globally on all controllers and actions
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "bearer"
-                },
-                Scheme = "oauth2",
-                Name = "bearer",
-                In = ParameterLocation.Header
-            },
-            new List<string>()
-        }
-    });
-});
+builder.Services.AddSwaggerGen();
 
     builder.Services.AddRouting(option => option.LowercaseUrls = true);
     var app = builder.Build();
