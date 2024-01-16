@@ -13,43 +13,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Models;
-using MovieWebAssembly_Api.Helper;
 using MovieWebAssembly_Api.Requests.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
-var apiSettingSection = builder.Configuration.GetSection("ApiSettings");
-var apiSettings = apiSettingSection.Get<ApiSettings>();
-var key = Encoding.ASCII.GetBytes(apiSettings.SecretKey);
-
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-builder.Services.Configure<ApiSettings>(apiSettingSection);
-builder.Services.AddAuthentication(opt =>
-    {
-        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(x =>
-    {
-        x.RequireHttpsMetadata = false;
-        x.SaveToken = true;
-        x.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateAudience = true,
-            ValidateIssuer = true,
-            ValidAudience = apiSettings.ValidAudience,
-            ValidIssuer = apiSettings.ValidIssuer,
-            ClockSkew = TimeSpan.Zero
-        };
-    });
-
+builder.Services.AddAuthentication();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
@@ -156,13 +129,13 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieWebAssembly_Api", Version = "v1" });
     
     // Define the OAuth2.0 Bearer Security scheme
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme.",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http, // Change to Http
-        Scheme = "bearer",              // Note the lowercase 'bearer' specification
+        Type = SecuritySchemeType.Http, 
+        Scheme = "bearer",              
         BearerFormat = "JWT"
     });
 
@@ -175,10 +148,10 @@ builder.Services.AddSwaggerGen(c =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Id = "bearer"
                 },
                 Scheme = "oauth2",
-                Name = "Bearer",
+                Name = "bearer",
                 In = ParameterLocation.Header
             },
             new List<string>()
@@ -188,7 +161,6 @@ builder.Services.AddSwaggerGen(c =>
 
     builder.Services.AddRouting(option => option.LowercaseUrls = true);
     var app = builder.Build();
-// Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
